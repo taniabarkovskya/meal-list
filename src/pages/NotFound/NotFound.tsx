@@ -8,7 +8,6 @@ export const NotFound = () => {
         <p className="texl-lg md:text-xl text-gray-600 mb-6">
           Sorry, page you are looking for doesn't exist
         </p>
-        
       </div>
     </div>
   );
