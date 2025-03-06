@@ -27,7 +27,7 @@ export const SearchInput = () => {
 
   useEffect(() => {
     debouncedUpdate(searchValue);
-  }, [searchValue]);
+  }, [searchValue, debouncedUpdate]);
 
   return (
     <input
