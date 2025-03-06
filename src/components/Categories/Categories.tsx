@@ -3,9 +3,10 @@ import { getCategories } from "../../api/recipes";
 import { Link, useSearchParams } from "react-router-dom";
 import { getSearchWith } from "../../utils/searchHelper";
 import cn from "classnames";
+import { CategoriesSkeleton } from "../CategoriesSkeleton";
 
 export const Categories = () => {
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["categories"],
     queryFn: getCategories,
   });
@@ -15,36 +16,42 @@ export const Categories = () => {
 
   return (
     <div className="my-5">
-      <h3 className="text-2xl text-orange-900 font-bold mb-2">Choose category:</h3>
-      <div className="flex gap-5 justify-between flex-wrap">
-        <Link
-          to={{
-            search: getSearchWith(searchParams, { category: null }),
-          }}
-          className={cn(
-            "bg-orange-800/30 text-md md:text-xl font-bold text-orange-900 p-2 rounded-md cursor-pointer hover:bg-orange-800/50 transition duration-300 ease-in-out",
-            { "bg-orange-800/50": category === "" }
-          )}
-        >
-          All
-        </Link>
-        {data?.map((categoryFilter) => (
+      <h3 className="text-2xl text-orange-900 font-bold mb-2">
+        Choose category:
+      </h3>
+      {!isLoading ? (
+        <div className="flex gap-5 justify-between flex-wrap">
           <Link
-            key={categoryFilter.idCategory}
             to={{
-              search: getSearchWith(searchParams, {
-                category: categoryFilter.strCategory,
-              }),
+              search: getSearchWith(searchParams, { category: null }),
             }}
             className={cn(
               "bg-orange-800/30 text-md md:text-xl font-bold text-orange-900 p-2 rounded-md cursor-pointer hover:bg-orange-800/50 transition duration-300 ease-in-out",
-              { "bg-orange-800/50": category === categoryFilter.strCategory }
+              { "bg-orange-800/50": category === "" }
             )}
           >
-            {categoryFilter.strCategory}
+            All
           </Link>
-        ))}
-      </div>
+          {data?.map((categoryFilter) => (
+            <Link
+              key={categoryFilter.idCategory}
+              to={{
+                search: getSearchWith(searchParams, {
+                  category: categoryFilter.strCategory,
+                }),
+              }}
+              className={cn(
+                "bg-orange-800/30 text-md md:text-xl font-bold text-orange-900 p-2 rounded-md cursor-pointer hover:bg-orange-800/50 transition duration-300 ease-in-out",
+                { "bg-orange-800/50": category === categoryFilter.strCategory }
+              )}
+            >
+              {categoryFilter.strCategory}
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <CategoriesSkeleton />
+      )}
     </div>
   );
 };

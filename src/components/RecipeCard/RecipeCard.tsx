@@ -12,19 +12,26 @@ export const RecipeCard: React.FC<Props> = (props) => {
 
   const queryClient = useQueryClient();
 
-  const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+  const getFavorites = () => JSON.parse(localStorage.getItem("favorites") || "[]");
+
   const [isAdded, setIsAdded] = useState(
-    favorites.some((item: Meal) => item.idMeal === meal.idMeal)
+    getFavorites().some((item: Meal) => item.idMeal === meal.idMeal)
   );
 
-  const handleAddToFavorites = () => {
-    const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
-    setIsAdded(favorites.some((item: Meal) => item.idMeal === meal.idMeal));
-    if (!favorites.find((item: Meal) => item.idMeal === meal.idMeal)) {
+  const handleToggleFavorite = () => {
+    let favorites = getFavorites();
+
+    if (isAdded) {
+      // Видаляємо обраний рецепт зі списку
+      favorites = favorites.filter((item: Meal) => item.idMeal !== meal.idMeal);
+    } else {
+      // Додаємо рецепт до обраних
       favorites.push(meal);
-      localStorage.setItem("favorites", JSON.stringify(favorites));
-      queryClient.setQueryData(["favorites"], favorites);
     }
+
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+    queryClient.setQueryData(["favorites"], favorites);
+    setIsAdded(!isAdded);
   };
 
   return (
@@ -46,7 +53,7 @@ export const RecipeCard: React.FC<Props> = (props) => {
         </p>
         <button
           className="mt-4 w-full bg-orange-900 text-white py-2 rounded-lg cursor-pointer hover:bg-orange-800 transition-colors duration-300 ease-in-out"
-          onClick={handleAddToFavorites}
+          onClick={handleToggleFavorite}
         >
           {isAdded ? "Added" : "Add to favorites"}
         </button>

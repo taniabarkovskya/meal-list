@@ -4,10 +4,10 @@ import { Category } from "../types/Category";
 
 // const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export async function getMeals(): Promise<Meal[]> {
+export async function getMeals(query: string): Promise<Meal[]> {
   try {
     const response = await axios.get(
-      "https://www.themealdb.com/api/json/v1/1/search.php?s="
+      `https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`
     );
     return response.data.meals;
   } catch (error) {

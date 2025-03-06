@@ -1,17 +1,41 @@
+import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
+
+const debounce = (callback: (arg: string) => void, delay: number) => {
+  let timer: number | undefined = undefined;
+  return (arg: string) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      callback(arg);
+    }, delay);
+  };
+};
+
 export const SearchInput = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchValue, setSearchValue] = useState(searchParams.get("query") || "");
+  const debouncedUpdate = useRef(debounce((query) => {
+    setSearchParams((prev) => {
+      if (query) {
+        prev.set("query", query);
+      } else {
+        prev.delete("query");
+      }
+      return prev;
+    });
+  }, 500)).current;
+
+  useEffect(() => {
+    debouncedUpdate(searchValue);
+  }, [searchValue]);
+
   return (
-    <form className="w-full flex gap-1 my-2">
-      <input
-        type="search"
-        className="border-2 border-orange-900 rounded-md px-2 py-1 w-full"
-        placeholder="Search by name"
-      />
-      <button
-        className="bg-orange-900 text-white p-2 rounded-lg cursor-pointer hover:bg-orange-800 transition-colors duration-300 ease-in-out"
-        type="submit"
-      >
-        Search
-      </button>
-    </form>
+    <input
+      type="search"
+      className="border-2 border-orange-900 rounded-md px-2 py-1 w-full"
+      placeholder="Search by name"
+      value={searchValue}
+      onChange={(e) => setSearchValue(e.target.value)}
+    />
   );
 };
